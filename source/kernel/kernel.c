@@ -3,6 +3,7 @@
 #include "string.h"
 #include "terminal_driver.h"
 #include <stdint.h>
+#include "paging.h"
 
 void main()
 {
@@ -14,4 +15,5 @@ void main()
              "LLOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
     s.len = 96;
     printf(&s);
+    enable_paging(0x100000);
 }
