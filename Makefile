@@ -18,7 +18,7 @@ INCLUDES=$(KERNEL_DIR)/include
 LIBC=$(LIBC_DIR)/include
 
 GCC=$(PREFIX)-gcc
-GCC_FLAGS=-ffreestanding -I$(INCLUDES) -I$(LIBC)
+GCC_FLAGS=-ffreestanding -I$(INCLUDES) -I$(LIBC) -masm=intel
 FORMAT=clang-format -i
 
 default: 
@@ -39,7 +39,7 @@ $(BUILD_DIR)/%.o: $(LIBC_DIR)/%.c
 
 kernel: $(OBJ_FILES) $(KERNEL_DIR)/kernel_entry.asm
 	$(ASM) $(KERNEL_DIR)/kernel_entry.asm -f elf32 -o $(BUILD_DIR)/kernel_entry.o
-	$(LINKER) -o $(BUILD_DIR)/kernel.elf -Ttext 0x1000 -z noexecstack $(BUILD_DIR)/kernel_entry.o $(OBJ_FILES) 
+	$(LINKER) -T $(LINKER_FILE) -o $(BUILD_DIR)/kernel.elf -Ttext 0x1000 -z noexecstack $(BUILD_DIR)/kernel_entry.o $(OBJ_FILES)
 	$(OBJCOPY) --only-keep-debug $(BUILD_DIR)/kernel.elf $(BUILD_DIR)/kernel.sym
 	$(OBJCOPY) -O binary $(BUILD_DIR)/kernel.elf $(BUILD_DIR)/kernel.bin
 

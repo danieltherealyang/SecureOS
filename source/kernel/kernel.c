@@ -19,11 +19,12 @@ void main()
              "LLOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
     s.len = 96;
     printf(&s);
-
-    //initialise_paging();
-    setup_page();
+    enable_paging(0x100000);
+    /*
+    initialise_paging();
     string p;
     p.data = "paging enabled";
     p.len=14;
     printf(&p);
+    */    
 }
