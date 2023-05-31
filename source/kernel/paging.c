@@ -1,24 +1,27 @@
 #include "paging.h"
+#include "kheap.h"
 
-//Declare data aligned with some mark (1 page directory, 1 page table)
-//4 gb , 1024 4-byte entries = 4096
-uint32_t page_dir[1024] __attribute__((aligned(4096)));
-uint32_t page_table_one[1024] __attribute__((aligned(4096)));
+void initialise_paging() {
+	//make a page directory
+	page_directory_t* kernel_directory = kmalloc_a(sizeof(page_directory_t), 1);
+	
+	//need to implement frame allocation
 
-void main() {
-	//blank the page directory
-	for (int i = 0; i < 1024; i++) { //blank all 1024 entries
-		page_dir[i] = 0x00000002; //page fault 
-	}
-
-	//Create first page table
-	for (int i = 0; i < 1024; i++) { 
-		page_table_one[i] = (i * 0x1000) | 3; //
-	}
-	page_dir[0] = ((unsigned int)page_table_one) | 3;
-
-	//loadPageDirectory(page_dir);
-	//enablePaging();
-
+	switch_page_directory(kernel_directory); //enable paging
 }
+
+void switch_page_directory(page_directory_t *dir) {
+	//load dir
+	asm volatile("mov %0, %%cr3":: "r"(&dir->tablesPhysical));
+  	
+	uint32_t cr0;
+   	asm volatile("mov %%cr0, %0": "=r"(cr0));
+   	cr0 |= 0x80000001; // enable
+   	asm volatile("mov %0, %%cr0":: "r"(cr0));	
+}
+
+// retrieves ptr to page req'd; if make == 1, create page
+page_t *get_page(uint32_t address, int make, page_directory_t *dir);
+
+
 
